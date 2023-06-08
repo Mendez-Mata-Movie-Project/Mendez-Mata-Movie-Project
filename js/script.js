@@ -5,21 +5,26 @@ $.ajax({
     method: "GET"
 }).done(function (data) {
     console.log(data);
-    var movies = data;
-    var table = '';
+    let movies = data;
+    let movieListHtml = '';
 
-    for (var i = 0; i < movies.length; i++) {
-        var movie = movies[i];
+    for (let i = 0; i < movies.length; i++) {
+        let movie = movies[i];
         fetch(`http://www.omdbapi.com/?t=${movie.title}&apikey=${omdbApiKey}`)
             .then(response => response.json())
             .then(omdbData => {
                 let poster = omdbData.Poster;
-                table += '<div>';
-                table += `<h2>${movie.title}</h2>`;
-                table += `<img src="${poster}" alt="${movie.title}">`;
-                table += `<p>Rating: ${movie.rating}</p>`;
-                table += '</div>';
-                $('#movies-list').html(table);
+                movieListHtml += `
+                  <div class="card ">
+                    <img src="${poster}" class="card-img-top" alt="${movie.title}" width="200" height="275">
+                    <div class="card-body">
+                      <p class="card-title wrap-text">${movie.title}</p>
+                      <p class="card-text">Rating: ${movie.rating}</p>
+                    </div>
+                  </div>`;
+
+
+                $('#movies-list').html(movieListHtml);
             })
             .catch(error => {
                 console.error('Error:', error);

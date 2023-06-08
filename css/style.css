@@ -1,0 +1,21 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #1e1e1e;
+    color: white;
+}
+
+.card-title {
+    color: #d10a27;
+}
+
+.card {
+    background-color: transparent;
+}
+
+.card-body {
+    max-width: 200px;
+}
+

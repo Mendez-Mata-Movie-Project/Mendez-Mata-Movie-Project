@@ -7,6 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>My Movie App</title>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div class="container">
@@ -15,7 +17,7 @@
 		<label for="title"></label>
 		<input type="text" id="title" name="title" required>
 		<label for="rating" id=""></label>
-		<select name="rating" id="rating">
+		<select name="rating" id="rating" required>
 			<option value="">Select a Rating</option>
 			<option value="1">1</option>
 			<option value="2">2</option>
@@ -27,8 +29,9 @@
 	</form>
 	
 
-        <div id="movies-list"></div>
+        <div id="movies-list" class="row"></div>
 </div>
+
 <script src="js/keys.js"></script>
 <script src="js/script.js"></script>
 </body>
