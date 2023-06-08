@@ -13,33 +13,9 @@
     <h1>Welcome to My Movie App</h1>
 
 
-        <div id="movies-table"></div>
+        <div id="movies-list"></div>
 </div>
-
-<script>
-    // JavaScript code
-    $.ajax({
-        url: "https://peppermint-superficial-shame.glitch.me/movies",
-        method: "GET"
-    }).done(function (data) {
-        console.log(data);
-        var movies = data;
-        var table = '';
-
-        for (var i = 0; i < movies.length; i++) {
-            var movie = movies[i];
-            table += '<div>';
-            table += '<p>' + movie.title + '</p>';
-            table += '<p>' + "rating: " + movie.rating + '</p>';
-            table += '<div>';
-        }
-
-        $('#movies-table').html(table);
-    }).fail(function (error) {
-        console.log(error);
-    });
-
-</script>
-
+<script src="js/keys.js"></script>
+<script src="js/script.js"></script>
 </body>
 </html>
