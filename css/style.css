@@ -19,3 +19,26 @@ body {
     max-width: 200px;
 }
 
+.rating-overlay {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ff6b2e;
+    opacity: 0.9;
+    color: #fff;
+    border-radius: 50%;
+}
+
+.card-rating {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+}
+
+
+
