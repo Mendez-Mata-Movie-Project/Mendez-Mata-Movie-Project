@@ -9,27 +9,17 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 </head>
 <body>
-<div class="caontainer">
+<div class="container">
     <h1>Welcome to My Movie App</h1>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Title</th>
-            <th>Director</th>
-            <th>Year</th>
-        </tr>
-        </thead>
-        <tbody id="movies-table">
 
-        </tbody>
-    </table>
+        <div id="movies-table"></div>
 </div>
 
 <script>
     // JavaScript code
     $.ajax({
-        url: "https://peppermint-superficial-shame",
+        url: "https://peppermint-superficial-shame.glitch.me/movies",
         method: "GET"
     }).done(function (data) {
         console.log(data);
@@ -38,11 +28,10 @@
 
         for (var i = 0; i < movies.length; i++) {
             var movie = movies[i];
-            table += '<tr>';
-            table += '<td>' + movie.title + '</td>';
-            table += '<td>' + movie.director + '</td>';
-            table += '<td>' + movie.year + '</td>';
-            table += '</tr>';
+            table += '<div>';
+            table += '<p>' + movie.title + '</p>';
+            table += '<p>' + "rating: " + movie.rating + '</p>';
+            table += '<div>';
         }
 
         $('#movies-table').html(table);
