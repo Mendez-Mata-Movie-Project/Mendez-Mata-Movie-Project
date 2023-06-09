@@ -83,20 +83,58 @@ $.ajax({
     console.log(error);
 });
 
-$('#add-movie-form').on('submit', function(e) {
-    e.preventDefault();
+$('#save-add-button').on('click', function() {
+    let newTitle = $('#movie-title-modal').val();
+    let newRating = $('#movie-rating-modal').val();
 
-    let newTitle = $('#title').val();
-    let newRating = $('#rating').val();
-
-    $.ajax({url: `https://peppermint-superficial-shame.glitch.me/movies/`,
+    $.ajax({
+        url: `https://peppermint-superficial-shame.glitch.me/movies/`,
         method: "POST",
         data: {
             title: newTitle,
             rating: newRating
         }
     }).then(() => fetch("https://peppermint-superficial-shame.glitch.me/movies")).then(resp => resp.json()).then(data => { console.log(data); location.reload(); });
-
-
+    $('#add-movie-modal').modal('hide');
 });
+
+
+$('#title-input').on('keyup', function(e) {
+   let searchText = $(this).val();
+
+   if (searchText.length > 2) {
+       $.ajax({
+           url: `http://www.omdbapi.com/?s=${searchText}&apikey=${omdbApiKey}`,
+           method: 'GET',
+           success: function(response) {
+               let movies = response.Search;
+               let suggestions = '';
+               if (movies) {
+                   for (let i = 0; i < movies.length; i++) {
+                       suggestions += `<p class="suggestion">${movies[i].Title}</p>`;
+                   }
+               }
+               $('#search-results').html(suggestions);
+           },
+           error: function(error){
+               console.log(error);
+           }
+       });
+   }
+});
+
+$('#search-results').on('click', '.suggestion', function() {
+    let selectedTitle = $(this).text();
+    $('#movie-title-modal').val(selectedTitle);
+    $('#search-results').empty();
+    $('#add-movie-modal').modal('show');
+});
+
+$(document).click(function(event) {
+    if(!$(event.target).closest('#title-input').length && !$(event.target).closest('#search-results').length) {
+        $('#search-results').empty();
+    }
+});
+
+
 

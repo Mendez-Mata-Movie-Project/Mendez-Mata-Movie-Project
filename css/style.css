@@ -40,3 +40,93 @@ body {
     font-size: 12px;
 }
 
+.search-bar {
+    background-color: transparent;
+    border-radius: 20px;
+    border: 1px solid white;
+    padding: 2px;
+}
+
+.search-input {
+    position: relative;
+    border-radius: 20px;
+}
+
+.search-input .form-control {
+    box-shadow: none;
+    line-height: 20px;
+    padding-left: 35px;
+}
+.search-input .form-control::placeholder {
+    color: white;
+}
+
+.search-input .input-group-text {
+    position: absolute;
+    left: 0%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.search-input .form-control:focus {
+    outline: none;
+}
+
+#search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #1e1e1e;
+    border-radius: 4px;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 3;
+}
+
+#search-results p {
+    padding: 10px;
+    cursor: pointer;
+}
+
+#search-results p:hover {
+    background-color: grey;
+}
+
+#movies-list {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-right: 0;
+    margin-left: 0;
+    gap: 20px;
+    margin-top: 3rem;
+}
+
+.card {
+    flex: 0 0 auto;
+    width: 20vw;
+    height: 70vh;
+}
+
+.card-img-top {
+    width: 100%;
+    height: auto;
+}
+
+.card-title {
+    font-size: 1em;
+}
+
+
+
+
+
+
+
+
+
+
