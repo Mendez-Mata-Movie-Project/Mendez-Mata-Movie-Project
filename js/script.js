@@ -1,4 +1,6 @@
 const omdbApiKey = OMDB_KEY;
+$('#movies-list').html(`<div class="spinner-border text-light" role="status">
+  <span class="visually-hidden">Loading...</span></div>`);
 
 $.ajax({
     url: "https://peppermint-superficial-shame.glitch.me/movies",
@@ -7,6 +9,7 @@ $.ajax({
     console.log(data);
     let movies = data;
     let movieListHtml = '';
+    
 
     for (let i = 0; i < movies.length; i++) {
         let movie = movies[i];
@@ -22,13 +25,22 @@ $.ajax({
                     <img src="${poster}" class="card-img-top" alt="${movie.title}" width="200" height="275">
                     <div class="card-body">
                     <p class="card-title wrap-text d-inline text-center">${movie.title}</p>
-                      <div class="d-flex justify-content-end align-self-end">
+                      <div class="d-flex justify-content-end align-self-end" >
                           <i class="fa-regular fa-pen-to-square edit-icon" data-movie-id="${movie.id}"></i>
-                          <i class="fa-solid fa-trash" data-movie-id="${movie.id}"></i>
+                          <i class="fa-solid fa-trash delete-icon" data-movie-id="${movie.id}"></i>
+                         
                       </div>
                     </div>
                   </div>`;
                 $('#movies-list').html(movieListHtml);
+                $("body").on('click', '.delete-icon', function(){
+                    let movieId = $(this).data('movie-id');
+                    $.ajax({url: `https://peppermint-superficial-shame.glitch.me/movies/${movieId}`,
+                        method: "DELETE"
+                        
+                    }).then(() => fetch("https://peppermint-superficial-shame.glitch.me/movies")).then(resp => resp.json()).then(data => console.log(data)); // DELETE
+                })
+                
             })
             .catch(error => {
                 console.error('Error:', error);
