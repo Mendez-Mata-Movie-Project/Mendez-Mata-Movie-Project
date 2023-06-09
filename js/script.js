@@ -17,7 +17,7 @@ $.ajax({
             .then(omdbData => {
                 let poster = omdbData.Poster;
                 movieListHtml += `
-                  <div class="card">
+                  <div class="card mb-4">
                     <div class="rating-overlay">
                       <p class="card-text card-rating p-0">${movie.rating}</p>
                     </div>
