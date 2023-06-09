@@ -1,6 +1,6 @@
 const omdbApiKey = OMDB_KEY;
 $('#movies-list').html(`<div class="spinner-border text-light" role="status">
-  <span class="visually-hidden">Loading...</span></div>`);
+  <span class="visually-hidden"></span></div>`);
 
 $.ajax({
     url: "https://peppermint-superficial-shame.glitch.me/movies",
@@ -9,7 +9,6 @@ $.ajax({
     console.log(data);
     let movies = data;
     let movieListHtml = '';
-    
 
     for (let i = 0; i < movies.length; i++) {
         let movie = movies[i];
@@ -97,5 +96,4 @@ $('#add-movie-form').on('submit', function(e) {
             rating: newRating
         }
     }).then(() => fetch("https://peppermint-superficial-shame.glitch.me/movies")).then(resp => resp.json()).then(data => { console.log(data); location.reload(); });
-
 });
