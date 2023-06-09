@@ -33,12 +33,19 @@ $.ajax({
                     </div>
                   </div>`;
                 $('#movies-list').html(movieListHtml);
+
                 $("body").on('click', '.delete-icon', function(){
                     let movieId = $(this).data('movie-id');
-                    $.ajax({url: `https://peppermint-superficial-shame.glitch.me/movies/${movieId}`,
-                        method: "DELETE"
-                        
-                    }).then(() => fetch("https://peppermint-superficial-shame.glitch.me/movies")).then(resp => resp.json()).then(data => console.log(data)); // DELETE
+                    $('#delete-modal').data('movie-id', movieId).modal('show');
+
+                    $('#confirm-delete').on('click', function(){
+                        let movieId = $('#delete-modal').data('movie-id');
+                        $.ajax({url: `https://peppermint-superficial-shame.glitch.me/movies/${movieId}`,
+                            method: "DELETE"
+
+                        }).then(() => fetch("https://peppermint-superficial-shame.glitch.me/movies")).then(resp => resp.json()).then(data => { console.log(data); location.reload(); });
+                        $('#delete-modal').modal('hide');
+                    })
                 })
                 
             })
