@@ -47,7 +47,34 @@ $.ajax({
                         $('#delete-modal').modal('hide');
                     })
                 })
-                
+                $("body").on('click', '.edit-icon', function(){
+                    let movieId = $(this).data('movie-id');
+                    $.ajax({url: `https://peppermint-superficial-shame.glitch.me/movies/${movieId}`,
+                        method: "GET"
+                    }).done(function (movie){
+                        $('#edit-title-input').val(movie.title);
+                        $('#edit-rating-input').val(movie.rating);
+
+                        $('#edit-modal').data('movie-id', movieId);
+                        $('#edit-modal').modal('show');
+                    })
+                });
+
+                $('#save-edit-button').on('click', function(){
+                    let movieId = $('#edit-modal').data('movie-id');
+
+                    let updatedTitle = $('#edit-title-input').val();
+                    let updatedRating = $('#edit-rating-input').val();
+
+                    $.ajax({url: `https://peppermint-superficial-shame.glitch.me/movies/${movieId}`,
+                        method: "PUT",
+                        data: {
+                            title: updatedTitle,
+                            rating: updatedRating
+                        }
+                    }).then(() => fetch("https://peppermint-superficial-shame.glitch.me/movies")).then(resp => resp.json()).then(data => { console.log(data); location.reload(); });
+                    $('#edit-modal').modal('hide');
+                });
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -55,4 +82,20 @@ $.ajax({
     }
 }).fail(function (error) {
     console.log(error);
+});
+
+$('#add-movie-form').on('submit', function(e) {
+    e.preventDefault();
+
+    let newTitle = $('#title').val();
+    let newRating = $('#rating').val();
+
+    $.ajax({url: `https://peppermint-superficial-shame.glitch.me/movies/`,
+        method: "POST",
+        data: {
+            title: newTitle,
+            rating: newRating
+        }
+    }).then(() => fetch("https://peppermint-superficial-shame.glitch.me/movies")).then(resp => resp.json()).then(data => { console.log(data); location.reload(); });
+
 });
