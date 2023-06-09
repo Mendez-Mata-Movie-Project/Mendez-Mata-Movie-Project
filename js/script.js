@@ -23,11 +23,12 @@ $.ajax({
                     </div>
                     <img src="${poster}" class="card-img-top" alt="${movie.title}" width="200" height="275">
                     <div class="card-body">
+                    <div class="d-flex flex-column" >
                     <p class="card-title wrap-text d-inline text-center">${movie.title}</p>
-                      <div class="d-flex justify-content-end align-self-end" >
-                          <i class="fa-regular fa-pen-to-square edit-icon" data-movie-id="${movie.id}"></i>
+                    <div class="mx-auto">
+                          <i class="fa-regular fa-pen-to-square edit-icon mr-2" data-movie-id="${movie.id}"></i>
                           <i class="fa-solid fa-trash delete-icon" data-movie-id="${movie.id}"></i>
-                         
+                          </div>
                       </div>
                     </div>
                   </div>`;
