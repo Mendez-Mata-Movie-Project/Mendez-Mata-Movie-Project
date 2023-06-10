@@ -1,12 +1,17 @@
 const omdbApiKey = OMDB_KEY;
-$('#movies-list').html(`<div class="spinner-border text-light" role="status">
+$('#movies-list').html(`<div class="spinner-border text-danger" role="status">
   <span class="visually-hidden"></span></div>`);
+
+$('#movies-list').addClass('spinner-container');
 
 $.ajax({
     url: "https://peppermint-superficial-shame.glitch.me/movies",
     method: "GET"
 }).done(function (data) {
     console.log(data);
+
+    $('#movies-list').removeClass('spinner-container');
+
     let movies = data;
     let movieListHtml = '';
 
