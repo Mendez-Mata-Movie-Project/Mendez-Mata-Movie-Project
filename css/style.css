@@ -15,21 +15,6 @@ body {
     background-color: transparent;
 }
 
-
-.rating-overlay {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #b30000;
-    color: #fff;
-    border-radius: 50%;
-}
-
 .card-rating {
     margin: 0;
     padding: 0;

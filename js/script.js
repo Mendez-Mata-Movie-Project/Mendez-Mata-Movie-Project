@@ -22,18 +22,18 @@ $.ajax({
             .then(omdbData => {
                 let poster = omdbData.Poster;
                 movieListHtml += `
-                  <div class="card mb-4">
-                    <div class="rating-overlay">
-                      <p class="card-text card-rating p-0">${movie.rating}</p>
-                    </div>
+                  <div class="card mb-4">                                          
                     <img src="${poster}" class="card-img-top" alt="${movie.title}" width="200" height="275">
                     <div class="card-body">
-                    <div class="d-flex flex-column" >
+                    <div class="d-flex flex-column">
                     <p class="card-title wrap-text d-inline text-center">${movie.title}</p>
-                    <div class="mx-auto">
-                          <i class="fa-regular fa-pen-to-square edit-icon mr-2" data-movie-id="${movie.id}"></i>
+                    <div class="d-flex justify-content-between card-bottom">
+                            <p class="card-text card-rating p-0">${generateStars(movie.rating)}</p>
+                          <div>
+                          <i class="fa-regular fa-pen-to-square edit-icon" data-movie-id="${movie.id}"></i>
                           <i class="fa-solid fa-trash delete-icon" data-movie-id="${movie.id}"></i>
                           </div>
+                     </div>                         
                       </div>
                     </div>
                   </div>`;
@@ -141,6 +141,18 @@ $(document).click(function(event) {
         $('#search-results').empty();
     }
 });
+
+function generateStars(rating) {
+    let stars = '';
+    for (let i = 0; i < 5; i++) {
+        if (i < rating) {
+            stars += '<i class="fas fa-star fa-lg"></i>';
+        } else {
+            stars += '<i class="far fa-star fa-lg"></i>';
+        }
+    }
+    return stars;
+}
 
 
 
