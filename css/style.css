@@ -127,6 +127,10 @@ body {
     align-items: center;
 }
 
+.modal-content {
+    background-color: #1e1e1e;
+    max-width: 70%;
+}
 
 
 

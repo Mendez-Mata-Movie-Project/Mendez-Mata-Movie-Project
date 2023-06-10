@@ -133,6 +133,26 @@ $('#search-results').on('click', '.suggestion', function() {
     let selectedTitle = $(this).text();
     $('#movie-title-modal').val(selectedTitle);
     $('#search-results').empty();
+
+    // Fetch the genre of the selected movie
+    $.ajax({
+        url: `http://www.omdbapi.com/?t=${selectedTitle}&apikey=${omdbApiKey}`,
+        method: 'GET',
+        success: function(response) {
+            $('#movie-title-modal').text(response.Title);
+            $('#movie-genre-modal').text(response.Genre);
+            $('#movie-year-modal').text(response.Year);
+            $('#movie-plot-modal').text(response.Plot);
+
+
+            // Set the src attribute of the img tag
+            $('#movie-poster-modal').attr('src', response.Poster);
+        },
+        error: function(error){
+            console.log(error);
+        }
+    });
+
     $('#add-movie-modal').modal('show');
 });
 
