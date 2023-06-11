@@ -22,7 +22,7 @@ $.ajax({
             .then(omdbData => {
                 let poster = omdbData.Poster;
                 movieListHtml += `
-                  <div class="card mb-4">                                          
+                  <div class="card mb-4 mx-2">
                     <img src="${poster}" class="card-img-top" alt="${movie.title}" width="200" height="275">
                     <div class="card-body">
                     <div class="d-flex flex-column">
@@ -33,7 +33,7 @@ $.ajax({
                           <i class="fa-regular fa-pen-to-square edit-icon" data-movie-id="${movie.id}"></i>
                           <i class="fa-solid fa-trash delete-icon" data-movie-id="${movie.id}"></i>
                           </div>
-                     </div>                         
+                     </div>
                       </div>
                     </div>
                   </div>`;
@@ -173,6 +173,30 @@ function generateStars(rating) {
     }
     return stars;
 }
+
+$("body").on('click', '.card', function(){
+    if($(event.target).closest('.edit-icon').length || $(event.target).closest('.delete-icon').length) {
+        return;
+    }
+    let movieTitle = $(this).find('.card-title').text();
+    $.ajax({
+        url: `http://www.omdbapi.com/?t=${movieTitle}&apikey=${omdbApiKey}`,
+        method: 'GET',
+        success: function(response) {
+            $('#view-movie-title-modal').text(response.Title);
+            $('#view-movie-genre-modal').text(response.Genre);
+            $('#view-movie-year-modal').text(response.Year);
+            $('#view-movie-plot-modal').text(response.Plot);
+            $('#view-movie-rating-modal').text(response.imdbRating);
+            $('#view-movie-poster-modal').attr('src', response.Poster);
+        },
+        error: function(error){
+            console.log(error);
+        }
+    });
+
+    $('#view-movie-modal').modal('show');
+});
 
 
 
