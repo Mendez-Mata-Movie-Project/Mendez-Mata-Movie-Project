@@ -186,9 +186,6 @@ h1 {
     .left-side{
         display: none;
     }
-    .left-side{
-        display: none;
-    }
     .header {  /* Assuming the parent container has the 'header' class */
         flex-direction: column;
     }
