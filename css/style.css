@@ -12,8 +12,32 @@ h1 {
     letter-spacing: .5em;
     color: #D83A23;
     padding-left: 1.6%;
+    font-size: 3rem;
 }
 
+.genre-filter {
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: .1em;
+}
+
+.genres {
+    margin-top: 1.4em;
+}
+
+.genres p {
+    font-size: 1.3em;
+    color: #e1dfe5;
+}
+
+.genres p:hover {
+    color: #D83A23;
+    cursor: pointer;
+}
+
+.left-side {
+    background-color: HSL(0, 0%, 13%);
+    border-right: .03em solid #575757;
+}
 
 .card-title {
     color: #FF0000;
@@ -28,7 +52,7 @@ h1 {
 }
 
 .card-body {
-    background-color: #1D1D1D;
+    background-color: HSL(0, 0%, 13%);
 }
 
 
@@ -47,6 +71,8 @@ h1 {
     background-color: transparent;
     border-radius: 20px;
     border: 1px solid #FAF8FF;
+    height: 50%;
+    margin-top: 3px;
 }
 
 .search-input {
@@ -134,7 +160,7 @@ h1 {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #AF0404;
+    background: #D83A23;
     border-radius: 10px;
 }
 
@@ -149,6 +175,12 @@ h1 {
     background-color: #1e1e1e;
     max-width: 70%;
 }
+
+#content {
+    display: none;
+    opacity: 0;
+}
+
 
 
 

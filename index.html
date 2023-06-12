@@ -18,23 +18,39 @@
 
 <body>
 
-<h1 class="my-2 display-4 text-center">CINEVERSE</h1>
-<div class="search-bar col-lg-6 col-md-7 col-xs-12 mx-auto">
-    <!-- Input group for search -->
-    <div class="search-input input-group">
-        <!-- Search icon -->
-        <span class="input-group-text bg-transparent border-0">
+<div class="row vh-100 vw-100">
+    <div class="col-2 left-side">
+        <div class="logo d-flex justify-content-center">
+            <img src="img/logo-bg-removebg.png" alt="logo" height="98px" width="98px">
+        </div>
+        <div class="genres">
+            <p id="tv-shows" class="text-center genre-filter">TV SHOWS</p>
+            <p id="movies" class="text-center genre-filter">MOVIES</p>
+        </div>
+    </div>
+    <div class="col-10">
+        <div class="d-flex header mt-2">
+            <h1 class="my-2 text-center">CINEVERSE</h1>
+            <div class="search-bar col-lg-6 col-md-7 col-xs-12 mx-auto align-self-center">
+                <!-- Input group for search -->
+                <div class="search-input input-group">
+                    <!-- Search icon -->
+                    <span class="input-group-text bg-transparent border-0">
                 <i class="fas fa-search text-white"></i>
             </span>
-        <!-- Input field for location search -->
-        <input type="text" class="form-control bg-transparent text-white border-0" placeholder="Search"
-               id="title-input">
-        <!-- Autocomplete results -->
-        <div id="search-results"></div>
+                    <!-- Input field for location search -->
+                    <input type="text" class="form-control bg-transparent text-white border-0" placeholder="Search"
+                           id="title-input">
+                    <!-- Autocomplete results -->
+                    <div id="search-results"></div>
+                </div>
+            </div>
+        </div>
+        <div id="movies-list" class="row"></div>
     </div>
 </div>
 
-<div id="movies-list" class="row"></div>
+
 <div class="modal fade" id="add-movie-modal" tabindex="-1" role="dialog" aria-labelledby="addMovieModalLabel"
      aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -46,17 +62,20 @@
                 </button>
             </div>
             <div class="modal-body d-flex flex-column">
-                <div class="">
+                <div>
                     <strong>Movie Title:</strong> <span id="movie-title-modal"></span>
                 </div>
                 <div>
                     <strong>Movie Genre:</strong> <span id="movie-genre-modal"></span>
                 </div>
-                <div class="">
+                <div>
                     <strong>Year:</strong> <span id="movie-year-modal"></span>
                 </div>
-                <div class="mb-3">
+                <div>
                     <strong>Plot:</strong> <span id="movie-plot-modal"></span>
+                </div>
+                <div>
+                    <strong>Type:</strong> <span id="movie-type-modal"></span>
                 </div>
                 <img id="movie-poster-modal" src="" alt="Movie Poster" height="275px" width="60%"
                      class="align-self-center">
@@ -164,6 +183,7 @@
         </div>
     </div>
 </div>
+
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script src="js/keys.js"></script>
