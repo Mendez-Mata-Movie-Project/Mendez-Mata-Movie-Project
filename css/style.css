@@ -116,12 +116,12 @@ h1 {
     z-index: 3;
 }
 
-#search-results p {
+#search-results div {
     padding: 10px;
     cursor: pointer;
 }
 
-#search-results p:hover {
+#search-results div:hover {
     background-color: grey;
 }
 

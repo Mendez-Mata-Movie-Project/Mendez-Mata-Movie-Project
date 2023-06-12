@@ -1,3 +1,5 @@
+"use strict";
+$(document).ready(function() {
 const omdbApiKey = OMDB_KEY;
 let serverUrl = "https://coconut-same-chive.glitch.me/movies/";
 
@@ -8,13 +10,16 @@ $('#movies-list').html(`<div class="spinner-border text-danger" role="status">
 $('#movies-list').addClass('spinner-container');
 
 //Fetching information for API, starting an AJAX request to server
+//     setTimeout(function() {
 $.ajax({
     url: serverUrl,
     method: "GET"
 }).done(function (data) {
     console.log(data);
     // Removes the 'spinner-container' class from the element with the ID 'movies-list'
+
     $('#movies-list').removeClass('spinner-container');
+
     // Stores the data received from the server in a variable
     let movies = data;
     let movieListHtml = '';
@@ -40,6 +45,7 @@ $.ajax({
 }).fail(function (error) {
     console.log(error);
 });
+    // }, 2000);
 
 //Event listeners
 $("body").on('click', '.delete-icon', handleDeleteIconClick);
@@ -87,8 +93,14 @@ $('#title-input').on('keyup', function(e) {
                 // If the movies array is not empty
                 if (movies) {
                     for (let i = 0; i < movies.length; i++) {
+                        let movie = movies[i];
                         // Adds a paragraph element with the class 'suggestion' and the movie title as the text to the suggestions string
-                        suggestions += `<p class="suggestion">${movies[i].Title}</p>`;
+                        suggestions += `
+                            <div class="suggestion d-flex pl-3 mb-2">
+                                <img src="${movie.Poster}" alt="${movie.Title}" class="poster mr-2" height="75px" width="50px">
+                                <p class="title align-self-center">${movie.Title}</p>
+                            </div>`;
+
                     }
                 }
                 // Updates the inner HTML of the element with id 'search-results'
@@ -287,15 +299,26 @@ function handleEditIconClick() {
     $.ajax({url: `https://coconut-same-chive.glitch.me/movies/${movieId}`,
         method: "GET"
     }).done(function (movie){
-        // Sets the current title and rating to the edit input fields
-        $('#edit-title-input').val(movie.title);
-        $('#edit-rating-input').val(movie.rating);
+        fetch(`http://www.omdbapi.com/?t=${movie.title}&apikey=${omdbApiKey}`)
+            .then(response => response.json())
+            .then(omdbData => {
+                let poster = omdbData.Poster;
+                let type = omdbData.Type;
 
-        // Sets the movie id to the edit modal
-        $('#edit-modal').data('movie-id', movieId);
-        // Shows the edit modal
-        $('#edit-modal').modal('show');
-    })
+                // Sets the current title, rating, and type to the edit input fields
+                $('#edit-title-input').val(movie.title);
+                $('#edit-rating-input').val(movie.rating);
+                $('#edit-type-input').val(type);
+
+                // Sets the movie id to the edit modal
+                $('#edit-modal').data('movie-id', movieId);
+                // Shows the edit modal
+                $('#edit-modal').modal('show');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
 }
 
 //Function for the edit movie modal is clicked
@@ -305,16 +328,18 @@ function handleSaveEditButtonClick() {
     // Gets the updated title and rating from the input fields
     let updatedTitle = $('#edit-title-input').val();
     let updatedRating = $('#edit-rating-input').val();
+    let updatedType = $('#edit-type-input').val();
     // Makes an AJAX request to update the movie details with the specified id
     $.ajax({url: `https://coconut-same-chive.glitch.me/movies/${movieId}`,
         method: "PUT",
         data: {
             title: updatedTitle,
-            rating: updatedRating
+            rating: updatedRating,
+            type: updatedType
         }
     }).then(() => fetch(serverUrl)).then(resp => resp.json()).then(data => { console.log(data); location.reload(); });
     $('#edit-modal').modal('hide');
 }
-
+});
 
 
