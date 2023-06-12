@@ -181,7 +181,15 @@ h1 {
     opacity: 0;
 }
 
+@media screen and (max-width:768px) {
+    .left-side{
+        display: none;
+    }
+    h1{
+        display: block;
+    }
 
+}
 
 
 
