@@ -73,6 +73,7 @@ h1 {
     border: 1px solid #FAF8FF;
     height: 50%;
     margin-top: 3px;
+    width: 50%;
 }
 
 .search-input {
@@ -181,14 +182,19 @@ h1 {
     opacity: 0;
 }
 
-@media screen and (max-width:768px) {
+@media screen and (max-width:992px) {
     .left-side{
         display: none;
     }
-    h1{
-        display: block;
+    .left-side{
+        display: none;
     }
-
+    .header {  /* Assuming the parent container has the 'header' class */
+        flex-direction: column;
+    }
+    .search-bar {
+        width: 100%;  /* Ensures the search bar takes up the full width of the container */
+    }
 }
 
 
