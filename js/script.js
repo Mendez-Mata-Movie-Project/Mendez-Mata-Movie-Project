@@ -1,345 +1,378 @@
 "use strict";
-$(document).ready(function() {
-const omdbApiKey = OMDB_KEY;
-let serverUrl = "https://coconut-same-chive.glitch.me/movies/";
 
-//Loading spinners//
-$('#movies-list').html(`<div class="spinner-border text-danger" role="status">
-  <span class="visually-hidden"></span></div>`);
+$(document).ready(function () {
+    // API key for the OMDB API
+    const omdbApiKey = OMDB_KEY;
 
-$('#movies-list').addClass('spinner-container');
+    // URL for the server
+    const serverUrl = "https://coconut-same-chive.glitch.me/movies/";
 
-//Fetching information for API, starting an AJAX request to server
-//     setTimeout(function() {
-$.ajax({
-    url: serverUrl,
-    method: "GET"
-}).done(function (data) {
-    console.log(data);
-    // Removes the 'spinner-container' class from the element with the ID 'movies-list'
+    // jQuery objects for DOM elements
+    const $moviesList = $("#movies-list");
+    const $searchResults = $("#search-results");
 
-    $('#movies-list').removeClass('spinner-container');
+    // Function to show the loading spinner
+    function showLoadingSpinner() {
+        $moviesList.html(
+            `<div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden"></span>
+      </div>`
+        );
+        $moviesList.addClass("spinner-container");
+    }
 
-    // Stores the data received from the server in a variable
-    let movies = data;
-    let movieListHtml = '';
-    //Looping through each movie received from the server
-    for (let i = 0; i < movies.length; i++) {
-        let movie = movies[i];
-        // Fetches additional data for the current movie from the OMDB API
-        fetch(`http://www.omdbapi.com/?t=${movie.title}&apikey=${omdbApiKey}`)
-            .then(response => response.json())
-            .then(omdbData => {
-                let poster = omdbData.Poster;
-                
-                //Generating the HTML for current movies cards
-                movieListHtml += generateMovieCardHtml(movie, poster);
-                // Updates the inner HTML of the 'movies-list' element with the movie list HTML
-                $('#movies-list').html(movieListHtml);
+    // Function to hide the loading spinner
+    function hideLoadingSpinner() {
+        $moviesList.removeClass("spinner-container");
+    }
 
-            })
-            .catch(error => {
-                console.error('Error:', error);
+    // Function to generate star icons based on a rating
+    function generateStars(rating) {
+        let stars = "";
+        for (let i = 0; i < 5; i++) {
+            if (i < rating) {
+                // Append a filled star icon if the index is less than the rating
+                stars += '<i class="fas fa-star fa-lg"></i>';
+            } else {
+                // Append an empty star icon if the index is greater than or equal to the rating
+                stars += '<i class="far fa-star fa-lg"></i>';
+            }
+        }
+        return stars;
+    }
+
+    // Function to generate HTML for a movie card
+    function generateMovieCardHtml(movie, poster) {
+        return `
+      <div class="card mb-4 mx-2">
+        <img src="${poster}" class="card-img-top" alt="${movie.title}" width="200" height="275">
+        <div class="card-body">
+          <div class="d-flex flex-column">
+            <p class="card-title wrap-text d-inline text-center">${movie.title}</p>
+            <div class="d-flex justify-content-between card-bottom">
+              <p class="card-text card-rating p-0">${generateStars(movie.rating)}</p>
+              <div>
+                <i class="fa-regular fa-pen-to-square edit-icon" data-movie-id="${movie.id}"></i>
+                <i class="fa-solid fa-trash delete-icon" data-movie-id="${movie.id}"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    // Function to fetch movie details from the OMDB API
+    function fetchMovieDetails(title) {
+        return fetch(`http://www.omdbapi.com/?t=${title}&apikey=${omdbApiKey}`)
+            .then((response) => response.json())
+            .catch((error) => {
+                console.error("Error:", error);
             });
     }
-}).fail(function (error) {
-    console.log(error);
-});
-    // }, 2000);
 
-//Event listeners
-$("body").on('click', '.delete-icon', handleDeleteIconClick);
-$("body").on('click', '.edit-icon', handleEditIconClick);
-$('#save-edit-button').on('click', handleSaveEditButtonClick);
-
-// Event listener for add-movie-modal save button
-$('#save-add-button').on('click', function() {
-    // Retrieves values from the input fields in the modal
-    let newTitle = $('#movie-title-modal').val();
-    let newRating = $('#movie-rating-modal').val();
-    let newType = $('#movie-type-modal').text();
-    // Makes a POST request to add the new movie
-    $.ajax({
-        url: serverUrl,
-        method: "POST",
-        data: {
-            title: newTitle,
-            rating: newRating,
-            type: newType
-        }
-    }).then(() => fetch(serverUrl))
-        .then(resp => resp.json())
-        .then(data => {
-            console.log(data);
-            location.reload();
+    // Function to render the movie list
+    function renderMovieList(movies) {
+        let movieListHtml = "";
+        movies.forEach((movie) => {
+            // Fetches movie details from the OMDB API for each movie
+            fetchMovieDetails(movie.title).then((omdbData) => {
+                const poster = omdbData.Poster;
+                // Generates the HTML code for the movie card using the fetched poster
+                movieListHtml += generateMovieCardHtml(movie, poster);
+                // Updates the movies list element with the updated HTML
+                $moviesList.html(movieListHtml);
+            });
         });
-    // Closes the 'add-movie-modal' modal
-    $('#add-movie-modal').modal('hide');
-});
+    }
 
-//Event listener for typing into search bar
-$('#title-input').on('keyup', function(e) {
-    // Stores the current value of the input field
-    let searchText = $(this).val();
-    // If the length of the input field value is greater than 2
-    if (searchText.length > 2) {
-        // Initiates an AJAX request to the OMDB API to search for movies with titles that include the input field value
+    // Function to load movies from the server based on the given type
+    function loadMovies(type) {
+        // Constructs the URL for the API call based on the specified type
+        const url = `https://coconut-same-chive.glitch.me/movies?type=${type}`;
+        // Makes an AJAX request to retrieve the movies data
         $.ajax({
-            url: `http://www.omdbapi.com/?s=${searchText}&apikey=${omdbApiKey}`,
-            method: 'GET',
-            success: function(response) {
-                let movies = response.Search;
-                let suggestions = '';
-                // If the movies array is not empty
-                if (movies) {
-                    for (let i = 0; i < movies.length; i++) {
-                        let movie = movies[i];
-                        // Adds a paragraph element with the class 'suggestion' and the movie title as the text to the suggestions string
-                        suggestions += `
-                            <div class="suggestion d-flex pl-3 mb-2">
-                                <img src="${movie.Poster}" alt="${movie.Title}" class="poster mr-2" height="75px" width="50px">
-                                <p class="title align-self-center">${movie.Title}</p>
-                            </div>`;
-
-                    }
-                }
-                // Updates the inner HTML of the element with id 'search-results'
-                $('#search-results').html(suggestions);
-            },
-            error: function(error){
+            url: url,
+            method: "GET",
+        })
+            .done(function (data) {
+                const movies = data;
+                // Renders the movie list using the retrieved movies data
+                renderMovieList(movies);
+            })
+            .fail(function (error) {
                 console.log(error);
-            }
+            });
+    }
+
+    // Event handler for the delete icon click
+    function handleDeleteIconClick() {
+        // Retrieves the movie ID from the clicked delete icon
+        const movieId = $(this).data("movie-id");
+        // Sets the movie ID as a data attribute on the delete modal and shows the modal
+        $("#delete-modal").data("movie-id", movieId).modal("show");
+        // Event handler to the confirm delete button
+        $("#confirm-delete").on("click", function () {
+            // Retrieves the movie ID from the delete modal
+            const movieId = $("#delete-modal").data("movie-id");
+            // Makes an AJAX request to delete the movie with the specified ID
+            $.ajax({
+                url: `https://coconut-same-chive.glitch.me/movies/${movieId}`,
+                method: "DELETE",
+            })
+                .then(() => fetch(serverUrl))
+                .then((resp) => resp.json())
+                .then((data) => {
+                    console.log(data);
+                    location.reload();
+                });
+            $("#delete-modal").modal("hide");
         });
     }
-});
 
-//Event listener for when search result title is clicked
-$('#search-results').on('click', '.suggestion', function() {
-    // Stores the text of the clicked suggestion
-    let selectedTitle = $(this).text();
-    // Sets the value of the input field in the modal to the selected title
-    $('#movie-title-modal').val(selectedTitle);
-    // Clears the search results
-    $('#search-results').empty();
-    // Initiates an AJAX request to the OMDB API to retrieve the details of the selected movie
-    $.ajax({
-        url: `http://www.omdbapi.com/?t=${selectedTitle}&apikey=${omdbApiKey}`,
-        method: 'GET',
-        success: function(response) {
-            $('#movie-title-modal').text(response.Title);
-            $('#movie-genre-modal').text(response.Genre);
-            $('#movie-year-modal').text(response.Year);
-            $('#movie-plot-modal').text(response.Plot);
-            $('#movie-type-modal').text(response.Type);
+    // Event handler for the edit icon click
+    function handleEditIconClick() {
+        // Retrieves the movie ID from the clicked edit icon
+        const movieId = $(this).data("movie-id");
+        // Makes an AJAX request to retrieve the movie details for the specified movie ID
+        $.ajax({
+            url: `https://coconut-same-chive.glitch.me/movies/${movieId}`,
+            method: "GET",
+        }).done(function (movie) {
+            // Once the movie details are retrieved, fetches additional details from OMDB API
+            fetchMovieDetails(movie.title).then((omdbData) => {
+                const type = omdbData.Type;
 
+                // Populates the edit modal with the movie details
+                $("#edit-title-input").val(movie.title);
+                $("#edit-rating-input").val(movie.rating);
+                $("#edit-type-input").val(type);
+                $("#edit-modal").data("movie-id", movieId);
 
-            // Set the src attribute of the img tag
-            $('#movie-poster-modal').attr('src', response.Poster);
-        },
-        error: function(error){
-            console.log(error);
-        }
-    });
-
-    $('#add-movie-modal').modal('show');
-});
-
-//Event listener to close out of the search results, when clicked outside
-$(document).click(function(event) {
-    // If the element clicked is not the element with id 'title-input', 'search-results' or a descendant of it
-    if(!$(event.target).closest('#title-input').length && !$(event.target).closest('#search-results').length) {
-        // Empty (clear) the element with id 'search-results'
-        $('#search-results').empty();
+                // Sets the movie ID as a data attribute on the edit modal and shows the modal
+                $("#edit-modal").modal("show");
+            });
+        });
     }
-});
 
-//Event listener for when the card is clicked on
-$("body").on('click', '.card', function(event){
-    // If the clicked element or its ancestor has the class 'edit-icon' or 'delete-icon',
-    // exit the function early without further execution.
-    if($(event.target).closest('.edit-icon').length || $(event.target).closest('.delete-icon').length) {
-        return;
+    // Event handler for the save edit button click
+    function handleSaveEditButtonClick() {
+        // Retrieves the movie ID from the edit modal data attribute
+        const movieId = $("#edit-modal").data("movie-id");
+
+        // Retrieves the updated title, rating, and type from the input fields
+        const updatedTitle = $("#edit-title-input").val();
+        const updatedRating = $("#edit-rating-input").val();
+        const updatedType = $("#edit-type-input").val();
+
+        // Makes an AJAX request to update the movie details
+        $.ajax({
+            url: `https://coconut-same-chive.glitch.me/movies/${movieId}`,
+            method: "PUT",
+            data: {
+                title: updatedTitle,
+                rating: updatedRating,
+                type: updatedType,
+            },
+        })
+            .then(() => fetch(serverUrl))
+            .then((resp) => resp.json())
+            .then((data) => {
+                console.log(data);
+                location.reload();
+            });
+
+        // Hides the edit modal
+        $("#edit-modal").modal("hide");
     }
-    // Get the text of the element with class 'card-title'
-    let movieTitle = $(this).find('.card-title').text();
-    // Makes an AJAX GET request to the OMDB API to get information about the movie with the title `movieTitle`
-    $.ajax({
-        url: `http://www.omdbapi.com/?t=${movieTitle}&apikey=${omdbApiKey}`,
-        method: 'GET',
-        success: function(response) {
-            $('#view-movie-title-modal').text(response.Title);
-            $('#view-movie-genre-modal').text(response.Genre);
-            $('#view-movie-year-modal').text(response.Year);
-            $('#view-movie-plot-modal').text(response.Plot);
-            $('#view-movie-rating-modal').text(response.imdbRating);
-            $('#view-movie-poster-modal').attr('src', response.Poster);
-        },
-        error: function(error){
-            console.log(error);
-        }
-    });
-    // Shows the modal with the id 'view-movie-modal'
-    $('#view-movie-modal').modal('show');
-});
 
-//Function that takes the rating and generates into stars
-function generateStars(rating) {
-    let stars = '';
-    // Loops through 5 times since we want to display 5 stars
-    for (let i = 0; i < 5; i++) {
-        // If the current index is less than the rating, add a full star
-        if (i < rating) {
-            stars += '<i class="fas fa-star fa-lg"></i>';
-        }
-        // Else add an empty star
-        else {
-            stars += '<i class="far fa-star fa-lg"></i>';
-        }
-    }
-    return stars;
-}
+    // Event handler for the search input keyup
+    function handleSearchKeyUp() {
+        // Retrieves the search text from the input field
+        const searchText = $(this).val();
 
-//function that loads movie depending on the type
-function loadMovies(type) {
-    // url to get movies of a specific type
-    let url = `https://coconut-same-chive.glitch.me/movies?type=${type}`;
-    // Makes a GET request to the constructed url
-    $.ajax({
-        url: url,
-        method: "GET"
-    }).done(function (data) {
-        // Assigns the data received to the movies variable
-        let movies = data;
-        let movieListHtml = '';
-
-         // Loops through each movie
-        for (let i = 0; i < movies.length; i++) {
-            let movie = movies[i];
-            // Makes a request to OMDB API to get movie details by its title
-            fetch(`http://www.omdbapi.com/?t=${movie.title}&apikey=${omdbApiKey}`)
-                .then(response => response.json())
-                .then(omdbData => {
-                    let poster = omdbData.Poster;
-
-                    // Generates the movie card HTML and append it to the movie list HTM
-                    movieListHtml += generateMovieCardHtml(movie, poster);
-                    // Updates the movies list on the page with the generated HTML
-                    $('#movies-list').html(movieListHtml);
-
+        // Checks if the search text length is greater than 2
+        if (searchText.length > 2) {
+            $.ajax({
+                url: `http://www.omdbapi.com/?s=${searchText}&apikey=${omdbApiKey}`,
+                method: "GET",
+            })
+                .done(function (response) {
+                    // Retrieves the movies from the response
+                    const movies = response.Search;
+                    let suggestions = "";
+                    if (movies) {
+                        // Loops through each movie and generate suggestion HTML
+                        movies.forEach((movie) => {
+                            suggestions += `
+                <div class="suggestion d-flex pl-3 mb-2">
+                  <img src="${movie.Poster}" alt="${movie.Title}" class="poster mr-2" height="75px" width="50px">
+                  <p class="title align-self-center">${movie.Title}</p>
+                </div>`;
+                        });
+                    }
+                    // Updates the search results container with the generated suggestions
+                    $searchResults.html(suggestions);
                 })
-                .catch(error => {
-                    console.error('Error:', error);
+                .fail(function (error) {
+                    console.log(error);
                 });
         }
-    }).fail(function (error) {
-        console.log(error);
-    });
-}
+    }
 
-//Event listener for type when clicked
-$('.genre-filter').on('click', function() {
-    // Defines a mapping between the ids of the clicked elements and the type of movie
-    let typeMap = {
-        "movies": "movie",
-        "tv-shows": "series"
-    };
-    // Gets the id of the clicked element
-    let clickedId = $(this).attr('id');
-    // Gets the type of movie associated with the clicked element
-    let type = typeMap[clickedId];
-    // Calls the function loadMovies with the determined type
-    loadMovies(type);
-});
-
-//Function that generates html cards
-function generateMovieCardHtml(movie, poster) {
-    return `
-        <div class="card mb-4 mx-2">
-            <img src="${poster}" class="card-img-top" alt="${movie.title}" width="200" height="275">
-            <div class="card-body">
-                <div class="d-flex flex-column">
-                    <p class="card-title wrap-text d-inline text-center">${movie.title}</p>
-                    <div class="d-flex justify-content-between card-bottom">
-                        <p class="card-text card-rating p-0">${generateStars(movie.rating)}</p>
-                        <div>
-                            <i class="fa-regular fa-pen-to-square edit-icon" data-movie-id="${movie.id}"></i>
-                            <i class="fa-solid fa-trash delete-icon" data-movie-id="${movie.id}"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>`;
-}
-
-//Function that deletes the movie when icon is clicked
-function handleDeleteIconClick() {
-    // Gets the movie id from the clicked icon
-    let movieId = $(this).data('movie-id');
-    // Sets the movie id to the delete modal and show the modal
-    $('#delete-modal').data('movie-id', movieId).modal('show');
-
-    // Sets a click event handler on the confirm-delete button
-    $('#confirm-delete').on('click', function(){
-        // Gets the movie id from the delete modal
-        let movieId = $('#delete-modal').data('movie-id');
-        // Makes an AJAX request to delete the movie with the specified id
-        $.ajax({url: `https://coconut-same-chive.glitch.me/movies/${movieId}`,
-            method: "DELETE"
-            // Fetches the updated list of movies from the server after the delete operation
-        }).then(() => fetch(serverUrl)).then(resp => resp.json()).then(data => { console.log(data); location.reload(); });
-        $('#delete-modal').modal('hide');
-    })
-}
-
-//Function that edits movie when icon is clicked
-function handleEditIconClick() {
-    // Gets the movie id from the clicked icon
-    let movieId = $(this).data('movie-id');
-    // Makes an AJAX request to get the movie details with the specified id
-    $.ajax({url: `https://coconut-same-chive.glitch.me/movies/${movieId}`,
-        method: "GET"
-    }).done(function (movie){
-        fetch(`http://www.omdbapi.com/?t=${movie.title}&apikey=${omdbApiKey}`)
-            .then(response => response.json())
-            .then(omdbData => {
-                let poster = omdbData.Poster;
-                let type = omdbData.Type;
-
-                // Sets the current title, rating, and type to the edit input fields
-                $('#edit-title-input').val(movie.title);
-                $('#edit-rating-input').val(movie.rating);
-                $('#edit-type-input').val(type);
-
-                // Sets the movie id to the edit modal
-                $('#edit-modal').data('movie-id', movieId);
-                // Shows the edit modal
-                $('#edit-modal').modal('show');
+    // Event handler for the suggestion click
+    function handleSuggestionClick() {
+        // Gets the selected title from the clicked suggestion
+        const selectedTitle = $(this).text();
+        // Sets the selected title as the value of the movie title input
+        $("#movie-title-modal").val(selectedTitle);
+        // Clears the search results container
+        $searchResults.empty();
+        // Makes an AJAX request to fetch movie details using the OMDB API
+        $.ajax({
+            url: `http://www.omdbapi.com/?t=${selectedTitle}&apikey=${omdbApiKey}`,
+            method: "GET",
+        })
+            // Updates the movie details in the modal with the retrieved data
+            .done(function (response) {
+                $("#movie-title-modal").text(response.Title);
+                $("#movie-genre-modal").text(response.Genre);
+                $("#movie-year-modal").text(response.Year);
+                $("#movie-plot-modal").text(response.Plot);
+                $("#movie-type-modal").text(response.Type);
+                $("#movie-poster-modal").attr("src", response.Poster);
             })
-            .catch(error => {
-                console.error('Error:', error);
+            .fail(function (error) {
+                console.log(error);
             });
-    });
-}
+        // Shows the add movie modal
+        $("#add-movie-modal").modal("show");
+    }
 
-//Function for the edit movie modal is clicked
-function handleSaveEditButtonClick() {
-    // Gets the movie id from the edit modal
-    let movieId = $('#edit-modal').data('movie-id');
-    // Gets the updated title and rating from the input fields
-    let updatedTitle = $('#edit-title-input').val();
-    let updatedRating = $('#edit-rating-input').val();
-    let updatedType = $('#edit-type-input').val();
-    // Makes an AJAX request to update the movie details with the specified id
-    $.ajax({url: `https://coconut-same-chive.glitch.me/movies/${movieId}`,
-        method: "PUT",
-        data: {
-            title: updatedTitle,
-            rating: updatedRating,
-            type: updatedType
+    // Event handler for closing search results
+    function handleCloseSearchResults(event) {
+        if (
+            // Checks if the clicked element is not a descendant of the title input or search results
+            !$(event.target).closest("#title-input").length &&
+            !$(event.target).closest("#search-results").length
+        ) {
+            // Clears the search results container
+            $searchResults.empty();
         }
-    }).then(() => fetch(serverUrl)).then(resp => resp.json()).then(data => { console.log(data); location.reload(); });
-    $('#edit-modal').modal('hide');
-}
+    }
+
+    // Event handler for card click
+    function handleCardClick(event) {
+        // Checks if the clicked element is the edit icon or delete icon
+        if (
+            $(event.target).closest(".edit-icon").length ||
+            $(event.target).closest(".delete-icon").length
+        ) {
+            // Exits the function if the click event occurred on the edit or delete icon
+            return;
+        }
+        // Retrieves the movie title from the clicked movie card
+        const movieTitle = $(this).find(".card-title").text();
+        // Retrieves additional movie details from the OMDB API
+        $.ajax({
+            url: `http://www.omdbapi.com/?t=${movieTitle}&apikey=${omdbApiKey}`,
+            method: "GET",
+        })
+            .done(function (response) {
+                // Updates the movie details in the view movie modal
+                $("#view-movie-title-modal").text(response.Title);
+                $("#view-movie-genre-modal").text(response.Genre);
+                $("#view-movie-year-modal").text(response.Year);
+                $("#view-movie-plot-modal").text(response.Plot);
+                $("#view-movie-rating-modal").text(response.imdbRating);
+                $("#view-movie-poster-modal").attr("src", response.Poster);
+            })
+            .fail(function (error) {
+                console.log(error);
+            });
+        // Shows the view movie modal
+        $("#view-movie-modal").modal("show");
+    }
+
+    // Function to initialize event listeners
+    function initializeEventListeners() {
+        $("body").on("click", ".delete-icon", handleDeleteIconClick);
+        $("body").on("click", ".edit-icon", handleEditIconClick);
+        $("body").on("click", ".card", handleCardClick);
+        $("#save-edit-button").on("click", handleSaveEditButtonClick);
+        $("#save-add-button").on("click", handleSaveAddButtonClick);
+        $("#title-input").on("keyup", handleSearchKeyUp);
+        $("#search-results").on("click", ".suggestion", handleSuggestionClick);
+        $(document).on("click", handleCloseSearchResults);
+        $(".genre-filter").on("click", handleGenreFilterClick);
+    }
+
+    // Function to handle genre filter click
+    function handleGenreFilterClick() {
+        // Map of genre filter IDs to corresponding OMDB types
+        const typeMap = {
+            movies: "movie",
+            "tv-shows": "series",
+        };
+        // Retrieves the clicked filter ID
+        const clickedId = $(this).attr("id");
+        // Determines the OMDB type based on the clicked filter ID
+        const type = typeMap[clickedId];
+        // Loads movies of the selected type
+        loadMovies(type);
+    }
+
+    // Function to handle save add button click
+    function handleSaveAddButtonClick() {
+        // Retrieves the values of the new movie's title, rating, and type from the input fields
+        const newTitle = $("#movie-title-modal").val();
+        const newRating = $("#movie-rating-modal").val();
+        const newType = $("#movie-type-modal").text();
+        // Makes an AJAX request to add the new movie to the server
+        $.ajax({
+            url: serverUrl,
+            method: "POST",
+            data: {
+                title: newTitle,
+                rating: newRating,
+                type: newType,
+            },
+        })
+            .then(() => fetch(serverUrl))
+            .then((resp) => resp.json())
+            .then((data) => {
+                console.log(data);
+                location.reload();
+            });
+        // Hides the add movie modal
+        $("#add-movie-modal").modal("hide");
+    }
+
+    // Function to initialize the page
+    function initializePage() {
+        // Displays the loading spinner
+        showLoadingSpinner();
+        // Makes an AJAX request to retrieve the movie data from the server
+        $.ajax({
+            url: serverUrl,
+            method: "GET",
+        })
+            .done(function (data) {
+                const movies = data;
+                console.log(data);
+                // Renders the movie list on the page
+                renderMovieList(movies);
+                // Hides the loading spinner
+                hideLoadingSpinner();
+            })
+            .fail(function (error) {
+                console.log(error);
+            });
+        // Initializes event listeners for various interactions on the page
+        initializeEventListeners();
+    }
+
+    // Calls the initializePage function when the document is ready
+    initializePage();
 });
 
 
