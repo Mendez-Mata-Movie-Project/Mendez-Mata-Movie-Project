@@ -250,11 +250,8 @@ $(document).ready(function () {
 
     // Event handler for closing search results
     function handleCloseSearchResults(event) {
-        if (
-            // Checks if the clicked element is not a descendant of the title input or search results
-            !$(event.target).closest("#title-input").length &&
-            !$(event.target).closest("#search-results").length
-        ) {
+        // Checks if the clicked element is not a descendant of the title input or search results
+        if (!$(event.target).closest("#title-input").length && !$(event.target).closest("#search-results").length) {
             // Clears the search results container
             $searchResults.empty();
         }
@@ -263,10 +260,7 @@ $(document).ready(function () {
     // Event handler for card click
     function handleCardClick(event) {
         // Checks if the clicked element is the edit icon or delete icon
-        if (
-            $(event.target).closest(".edit-icon").length ||
-            $(event.target).closest(".delete-icon").length
-        ) {
+        if ($(event.target).closest(".edit-icon").length || $(event.target).closest(".delete-icon").length) {
             // Exits the function if the click event occurred on the edit or delete icon
             return;
         }
