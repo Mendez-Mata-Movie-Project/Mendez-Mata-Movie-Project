@@ -186,11 +186,11 @@ h1 {
     .left-side{
         display: none;
     }
-    .header {  /* Assuming the parent container has the 'header' class */
+    .header {
         flex-direction: column;
     }
     .search-bar {
-        width: 100%;  /* Ensures the search bar takes up the full width of the container */
+        width: 100%;
     }
 }
 
