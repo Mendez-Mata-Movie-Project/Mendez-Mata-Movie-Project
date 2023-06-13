@@ -324,7 +324,7 @@ $(document).ready(function () {
     // Function to handle save add button click
     function handleSaveAddButtonClick() {
         // Retrieves the values of the new movie's title, rating, and type from the input fields
-        const newTitle = $("#movie-title-modal").val();
+        const newTitle = $("#movie-title-modal").val().trim();
         const newRating = $("#movie-rating-modal").val();
         const newType = $("#movie-type-modal").text();
         // Makes an AJAX request to add the new movie to the server
