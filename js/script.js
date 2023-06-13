@@ -31,10 +31,10 @@ $(document).ready(function () {
         let stars = "";
         for (let i = 0; i < 5; i++) {
             if (i < rating) {
-                // Append a filled star icon if the index is less than the rating
+                // Appends a filled star icon if the index is less than the rating
                 stars += '<i class="fas fa-star fa-lg"></i>';
             } else {
-                // Append an empty star icon if the index is greater than or equal to the rating
+                // Appends an empty star icon if the index is greater than or equal to the rating
                 stars += '<i class="far fa-star fa-lg"></i>';
             }
         }
