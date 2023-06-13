@@ -192,8 +192,14 @@ h1 {
 }
 
 strong {
-    color: var(--accent-color);
+    color: #DA1212;
+    letter-spacing: 1px;
 }
+
+.close, .close:hover {
+    color: #fff;
+}
+
 
 @media screen and (max-width: 992px) {
     .left-side {
